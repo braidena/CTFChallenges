@@ -102,9 +102,6 @@ int settingsSystem(char *options) {
     settingName = strtok(options, " ");
     strcpy(changeValue, strtok(NULL, " "));
 
-    if (changeValue == NULL) {
-        strcpy(changeValue, "");
-    }
     if (strcmp(settingName, "description") == 0) {
         memcpy(systemDescription, changeValue, 1024);
         printf("System description updated.\n");
