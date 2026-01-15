@@ -20,7 +20,7 @@ const char *globalLogs[] = {
     "Warning: Low disk space on drive C:."
 };
 
-char systemDescription[1024] = "Blah blah blah this device is super secret blah blah blah";
+char systemDescription[1024] = "Blah blah blah this device is super secret blah blah blah\n";
 
 char systemVersion[64] = "Version 1.0.0\n";
 char systemUptime[64] = "Uptime: 24 hours\n";
@@ -80,13 +80,17 @@ int infoSystem(char *options) {
         printf(systemUptime);
         return 0;
     }
+    if (strncmp(options, "description", 11) == 0 ) {
+        printf(systemDescription);
+        return 0;
+    }
     printf("Unknown system info request.\n");
     return 0;
 }
 
 int settingsSystem(char *options) {
     char *settingName;
-    char *changeValue;
+    char changeValue[1024];
     if (strlen(options) == 0) {
         printf("Invalid!\n");
         return 0;
@@ -96,23 +100,23 @@ int settingsSystem(char *options) {
         return 0;
     }
     settingName = strtok(options, " ");
-    changeValue = strtok(NULL, " ");
+    strcpy(changeValue, strtok(NULL, " "));
 
     if (changeValue == NULL) {
-        changeValue = "";
+        strcpy(changeValue, "");
     }
-    if (strcmp(settingName, "description") == 0 && strlen(changeValue) < 1024) {
-        memcpy(systemDescription, changeValue, strlen(changeValue));
+    if (strcmp(settingName, "description") == 0) {
+        memcpy(systemDescription, changeValue, 1024);
         printf("System description updated.\n");
         return 0;
     }
-    if (strcmp(settingName, "version") == 0 && strlen(changeValue) < 64) {
-        memcpy(systemVersion, changeValue, strlen(changeValue));
+    if (strcmp(settingName, "version") == 0) {
+        memcpy(systemVersion, changeValue, 64);
         printf("System version updated.\n");
         return 0;
     }
-    if (strcmp(settingName, "uptime") == 0 && strlen(changeValue) < 64) {
-        memcpy(systemUptime, changeValue, strlen(changeValue));
+    if (strcmp(settingName, "uptime") == 0) {
+        memcpy(systemUptime, changeValue, 64);
         printf("System uptime updated.\n");
         return 0;
     }
