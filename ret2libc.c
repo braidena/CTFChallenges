@@ -38,6 +38,10 @@ int printSystemCommands() {
 int querySystemLogs(char *options) {
     char errorBuffer[24];
     bool found = false;
+    if (strlen(options) == 0) {
+        printf("Invalid!\n");
+        return 0;
+    }
     if (strncmp(options, "?", 1) == 0 ) {
         printf("Usage: query <search_term>\n");
         return 0;
@@ -60,6 +64,10 @@ int querySystemLogs(char *options) {
 }
 
 int infoSystem(char *options) {
+    if (strlen(options) == 0) {
+        printf("Invalid!\n");
+        return 0;
+    }
     if (strncmp(options, "?", 1) == 0 ) {
         printf("Usage: info <version or uptime>\n");
         return 0;
@@ -77,11 +85,38 @@ int infoSystem(char *options) {
 }
 
 int settingsSystem(char *options) {
+    char *settingName;
+    char *changeValue;
+    if (strlen(options) == 0) {
+        printf("Invalid!\n");
+        return 0;
+    }
     if (strncmp(options, "?", 1) == 0 ) {
         printf("Usage: settings <setting_name> <change_value>\n");
         return 0;
     }
-    printf("Settings menu is under construction.\n");
+    settingName = strtok(options, " ");
+    changeValue = strtok(NULL, " ");
+
+    if (changeValue == NULL) {
+        changeValue = "";
+    }
+    if (strcmp(settingName, "description") == 0 && strlen(changeValue) < 1024) {
+        memcpy(systemDescription, changeValue, strlen(changeValue));
+        printf("System description updated.\n");
+        return 0;
+    }
+    if (strcmp(settingName, "version") == 0 && strlen(changeValue) < 64) {
+        memcpy(systemVersion, changeValue, strlen(changeValue));
+        printf("System version updated.\n");
+        return 0;
+    }
+    if (strcmp(settingName, "uptime") == 0 && strlen(changeValue) < 64) {
+        memcpy(systemUptime, changeValue, strlen(changeValue));
+        printf("System uptime updated.\n");
+        return 0;
+    }
+    printf("Invalid setting or value.\n");
     return 0;
 }
 
