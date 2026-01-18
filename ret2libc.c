@@ -89,7 +89,6 @@ int infoSystem(char *options) {
 }
 
 int settingsSystem(char *options) {
-    char *settingName;
     char changeValue[1024];
     if (strlen(options) == 0) {
         printf("Invalid!\n");
@@ -99,20 +98,21 @@ int settingsSystem(char *options) {
         printf("Usage: settings <setting_name> <change_value>\n");
         return 0;
     }
-    settingName = strtok(options, " ");
-    strcpy(changeValue, strtok(NULL, " "));
 
-    if (strcmp(settingName, "description") == 0) {
+    if (strncmp(options, "description", 11) == 0) {
+        memcpy(changeValue, options+12, sizeof(changeValue) - 13);
         memcpy(systemDescription, changeValue, 1024);
         printf("System description updated.\n");
         return 0;
     }
-    if (strcmp(settingName, "version") == 0) {
+    if (strncmp(options, "version", 7) == 0) {
+        memcpy(changeValue, options+8, sizeof(changeValue) - 9);
         memcpy(systemVersion, changeValue, 64);
         printf("System version updated.\n");
         return 0;
     }
-    if (strcmp(settingName, "uptime") == 0) {
+    if (strncmp(options, "uptime", 6) == 0) {
+        memcpy(changeValue, options+7, sizeof(changeValue) - 8);
         memcpy(systemUptime, changeValue, 64);
         printf("System uptime updated.\n");
         return 0;
@@ -124,7 +124,7 @@ int settingsSystem(char *options) {
 
 
 int main() {
-    char buffer[100];
+    char buffer[1024];
     int userInput;
     printf("\n---- SYSTEM CONSOLE ----\n");
     printSystemCommands();
@@ -134,7 +134,7 @@ int main() {
         printf("> ");
         fgets(buffer, sizeof(buffer), stdin);
 
-        if (strncmp(buffer, "quit", 4) == 0) {
+        if (strncmp(buffer, "quit", 4) == 0 || strncmp(buffer, "exit", 4) == 0) {
             printf("Exiting system console.\n");
             break;
 
@@ -144,7 +144,7 @@ int main() {
         } else if (strncmp(buffer, "query", 5) == 0) {
             char options[100];
             // Copy user input after "query " into options
-            strncpy(options, buffer + 6, sizeof(options) - 1);
+            memcpy(options, buffer + 6, sizeof(options) - 7);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
             // Remove newline character from options if present
             options[strcspn(options, "\n")] = 0;
@@ -153,16 +153,16 @@ int main() {
         } else if (strncmp(buffer, "info", 4) == 0) {
             char options[100];
             // Copy user input after "info " into options
-            strncpy(options, buffer + 5, sizeof(options) - 1);
+            memcpy(options, buffer + 5, sizeof(options) - 6);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
             // Remove newline character from options if present
             options[strcspn(options, "\n")] = 0;
             infoSystem(options);
 
         } else if (strncmp(buffer, "settings", 8) == 0) {
-            char options[100];
+            char options[1024];
             // Copy user input after "settings " into options
-            strncpy(options, buffer + 9, sizeof(options) - 1);
+            memcpy(options, buffer + 9, sizeof(options) - 10);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
             // Remove newline character from options if present
             options[strcspn(options, "\n")] = 0;
