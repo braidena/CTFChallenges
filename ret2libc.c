@@ -35,6 +35,11 @@ int printSystemCommands() {
     return 0;
 }
 
+// going to try and not use this as much as possible, but just in case
+void __attribute__((naked)) helper_gadgets() {
+    asm volatile ("pop %edi; ret");
+}
+
 int querySystemLogs(char *options) {
     char errorBuffer[24];
     bool found = false;
@@ -121,6 +126,7 @@ int settingsSystem(char *options) {
     }
     printf("Invalid setting or value.\n");
     return 0;
+
 }
 
 

