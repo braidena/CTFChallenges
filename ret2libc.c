@@ -64,6 +64,8 @@ int querySystemLogs(char *options) {
 }
 
 int infoSystem(char *options) {
+    FILE *fp = stdin;
+    char *ref = systemDescription;
     if (strlen(options) == 0) {
         printf("Invalid!\n");
         return 0;
