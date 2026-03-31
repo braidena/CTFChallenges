@@ -20,7 +20,7 @@ const char *globalLogs[] = {
     "Warning: Low disk space on drive C:."
 };
 
-char systemDescription[1024] = "Blah blah blah this device is super secret blah blah blah\n";
+char *systemDescription;
 
 char systemVersion[64] = "Version 1.0.0\n";
 char systemUptime[64] = "Uptime: 24 hours\n";
@@ -36,12 +36,12 @@ int printSystemCommands() {
 }
 
 // going to try and not use this as much as possible, but just in case
-void __attribute__((naked)) helper_gadgets() {
-    asm volatile ("pop %edi; ret");
+void __attribute__((naked)) FUN_1337() {
+    asm volatile ("add $0x400, %esp; ret");
 }
 
 int querySystemLogs(char *options) {
-    char errorBuffer[32];
+    char errorBuffer[24];
     bool found = false;
     if (strlen(options) == 0) {
         printf("Invalid!\n");
@@ -96,7 +96,7 @@ int infoSystem(char *options) {
 }
 
 int settingsSystem(char *options) {
-    char changeValue[1024];
+    char changeValue[1280];
     if (strlen(options) == 0) {
         printf("Invalid!\n");
         return 0;
@@ -108,7 +108,7 @@ int settingsSystem(char *options) {
 
     if (strncmp(options, "description", 11) == 0) {
         memcpy(changeValue, options+12, sizeof(changeValue) - 13);
-        memcpy(systemDescription, changeValue, 1024);
+        memcpy(systemDescription, changeValue, 1280);  
         printf("System description updated.\n");
         return 0;
     }
@@ -132,11 +132,12 @@ int settingsSystem(char *options) {
 
 
 int main() {
-    char buffer[1024];
+    char buffer[1280];
     int userInput;
     printf("\n---- SYSTEM CONSOLE ----\n");
     printSystemCommands();
-
+    systemDescription = malloc(1280);
+    strcpy(systemDescription, "Blah blah blah this device is super secret blah blah blah\n");
     while (1) {
 
         printf("> ");
@@ -150,7 +151,7 @@ int main() {
             printSystemCommands();
 
         } else if (strncmp(buffer, "query", 5) == 0) {
-            char options[16];
+            char options[100];
             // Copy user input after "query " into options
             memcpy(options, buffer + 6, sizeof(options) - 7);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
@@ -168,7 +169,7 @@ int main() {
             infoSystem(options);
 
         } else if (strncmp(buffer, "settings", 8) == 0) {
-            char options[1024];
+            char options[1280];
             // Copy user input after "settings " into options
             memcpy(options, buffer + 9, sizeof(options) - 10);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
