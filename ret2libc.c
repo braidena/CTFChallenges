@@ -41,7 +41,7 @@ void __attribute__((naked)) helper_gadgets() {
 }
 
 int querySystemLogs(char *options) {
-    char errorBuffer[24];
+    char errorBuffer[32];
     bool found = false;
     if (strlen(options) == 0) {
         printf("Invalid!\n");
@@ -69,8 +69,8 @@ int querySystemLogs(char *options) {
 }
 
 int infoSystem(char *options) {
-    FILE *fp = stdin;
-    char *ref = systemDescription;
+    volatile FILE *fp = stdin;
+    volatile char *ref = systemDescription;
     if (strlen(options) == 0) {
         printf("Invalid!\n");
         return 0;
@@ -150,7 +150,7 @@ int main() {
             printSystemCommands();
 
         } else if (strncmp(buffer, "query", 5) == 0) {
-            char options[100];
+            char options[16];
             // Copy user input after "query " into options
             memcpy(options, buffer + 6, sizeof(options) - 7);
             options[sizeof(options) - 1] = '\0'; // Ensure null-termination
